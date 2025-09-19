@@ -22,3 +22,9 @@ class WalletCache:
     @cached(ttl=60)  # 1 min
     async def get_sol_balance(self, wallet: str | Pubkey) -> float:
         return await self.shyft_api.get_balance(str(wallet))
+
+    @cached(ttl=60)  # 1 min
+    async def get_token_balance(self, wallet: str | Pubkey, token_mint: str) -> tuple[float, int]:
+        return await self.shyft_api.get_token_balance(
+            wallet=str(wallet), mint=token_mint
+        )

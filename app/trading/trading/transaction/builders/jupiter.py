@@ -1,5 +1,6 @@
 from solana.rpc.async_api import AsyncClient
 from solbot_cache.token_info import TokenInfoCache
+from solbot_cache.wallet import WalletCache
 from solbot_common.constants import SOL_DECIMAL, WSOL
 from solbot_common.utils.jupiter import JupiterAPI
 from solders.keypair import Keypair  # type: ignore
@@ -18,6 +19,7 @@ class JupiterTransactionBuilder(TransactionBuilder):
         super().__init__(rpc_client=rpc_client)
         self.token_info_cache = TokenInfoCache()
         self.jupiter_client = JupiterAPI()
+        self.wallet_cache = WalletCache()
 
     async def build_swap_transaction(
         self,
@@ -55,10 +57,18 @@ class JupiterTransactionBuilder(TransactionBuilder):
             token_info = await self.token_info_cache.get(token_address)
             if token_info is None:
                 raise ValueError("Token info not found")
-            decimals = token_info.decimals
+
             token_in = token_address
             token_out = str(WSOL)
-            amount = int(ui_amount * 10**decimals)
+
+            if in_type == SwapInType.Pct:
+                balance, decimals = await self.wallet_cache.get_token_balance(
+                    wallet=keypair.pubkey(), token_mint=token_address
+                )
+                amount = int(balance * (ui_amount / 100) * 10**decimals)
+            else:
+                decimals = token_info.decimals
+                amount = int(ui_amount * 10**decimals)
         else:
             raise ValueError("swap_direction must be buy or sell")
 
