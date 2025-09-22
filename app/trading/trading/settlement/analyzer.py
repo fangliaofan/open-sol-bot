@@ -9,6 +9,7 @@
 from typing import TypedDict
 
 from solbot_common.constants import SOL_DECIMAL, WSOL
+from solbot_common.log import logger
 from solbot_common.utils.helius import HeliusAPI
 
 # [

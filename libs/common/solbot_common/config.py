@@ -156,9 +156,9 @@ class TradingConfig(BaseModel):
     def validate_jito_api(cls, value: str) -> str:
         try:
             HttpUrl(value)
+            return value
         except ValueError:
-            raise ValueError(f"Invalid Jito API URL: {value}")
-        return value
+            return "https://mainnet.block-engine.jito.wtf"
 
 
 class APIConfig(BaseModel):
