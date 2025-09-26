@@ -34,7 +34,7 @@ class PumpTransactionBuilder(TransactionBuilder):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> VersionedTransaction:
         if swap_direction == "sell" and in_type is None:
             raise ValueError("in_type must be specified when selling")
@@ -199,6 +199,6 @@ class PumpTransactionBuilder(TransactionBuilder):
         return await build_transaction(
             keypair=keypair,
             instructions=instructions,
-            priority_fee=priority_fee,
             use_jito=use_jito,
+            compute_unit_price_micro_lamports=compute_unit_price_micro_lamports,
         )

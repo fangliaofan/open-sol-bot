@@ -23,7 +23,7 @@ class TransactionBuilder(ABC):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> VersionedTransaction:
         """构建交易
 

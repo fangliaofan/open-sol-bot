@@ -30,7 +30,7 @@ class JupiterTransactionBuilder(TransactionBuilder):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> VersionedTransaction:
         """Build swap transaction with GMGN API.
 
@@ -72,9 +72,6 @@ class JupiterTransactionBuilder(TransactionBuilder):
         else:
             raise ValueError("swap_direction must be buy or sell")
 
-        if use_jito and priority_fee is None:
-            raise ValueError("priority_fee must be specified when using jito")
-
         swap_tx_response = await self.jupiter_client.get_swap_transaction(
             input_mint=token_in,
             output_mint=token_out,
@@ -82,7 +79,7 @@ class JupiterTransactionBuilder(TransactionBuilder):
             amount=amount,
             slippage_bps=slippage_bps,
             use_jito=use_jito,
-            jito_tip_lamports=int(priority_fee * SOL_DECIMAL) if priority_fee else None,
+            compute_unit_price_micro_lamports=compute_unit_price_micro_lamports,
         )
         swap_tx = swap_tx_response["swapTransaction"]
         signed_tx = await sign_transaction_from_raw(swap_tx, keypair)

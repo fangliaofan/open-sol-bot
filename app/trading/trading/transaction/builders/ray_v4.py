@@ -337,7 +337,7 @@ class RaydiumV4TransactionBuilder(TransactionBuilder):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> VersionedTransaction:
         """构建交易
 
@@ -380,5 +380,5 @@ class RaydiumV4TransactionBuilder(TransactionBuilder):
             keypair=keypair,
             instructions=instructions,
             use_jito=use_jito,
-            priority_fee=priority_fee,
+            compute_unit_price_micro_lamports=compute_unit_price_micro_lamports,
         )

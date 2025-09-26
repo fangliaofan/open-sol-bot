@@ -274,8 +274,10 @@ async def handle_sandwich_slippage(message: Message, state: FSMContext):
     )
 
 
-@router.callback_query(F.data == "setting:edit_buy_priority_fee")
-async def edit_buy_priority_fee(callback: CallbackQuery, state: FSMContext):
+
+
+@router.callback_query(F.data == "setting:edit_compute_unit_price")
+async def edit_compute_unit_price(callback: CallbackQuery, state: FSMContext):
     if callback.message is None:
         logger.warning("No message found in update")
         return
@@ -298,7 +300,7 @@ async def edit_buy_priority_fee(callback: CallbackQuery, state: FSMContext):
 
     # Send prompt message with force reply
     msg = await callback.message.answer(
-        f"👋 请输入买入优先费(当前 {setting.buy_priority_fee}):",
+        f"👋 Please enter the compute unit price in micro lamports (current {setting.compute_unit_price_micro_lamports}):",
         parse_mode="HTML",
         reply_markup=ForceReply(),
     )
@@ -308,26 +310,26 @@ async def edit_buy_priority_fee(callback: CallbackQuery, state: FSMContext):
         prompt_message_id=msg.message_id,
         prompt_chat_id=msg.chat.id,
     )
-    await state.set_state(SettingStates.WAITING_FOR_BUY_PRIORITY_FEE)
+    await state.set_state(SettingStates.WAITING_FOR_COMPUTE_UNIT_PRICE)
 
 
-@router.message(SettingStates.WAITING_FOR_BUY_PRIORITY_FEE)
-async def handle_buy_priority_fee(message: Message, state: FSMContext):
+@router.message(SettingStates.WAITING_FOR_COMPUTE_UNIT_PRICE)
+async def handle_compute_unit_price(message: Message, state: FSMContext):
     if not message.text:
         return
 
     try:
-        buy_priority_fee = float(message.text.strip())
+        compute_unit_price = int(message.text.strip())
     except ValueError:
         return await invalid_input_and_request_reinput(
-            text="❌ 买入优先费必须是一个数字，请重新输入：",
+            text="❌ Compute unit price must be a number, please re-enter:",
             last_message=message,
             state=state,
         )
 
-    if buy_priority_fee < 0:
+    if compute_unit_price < 0:
         return await invalid_input_and_request_reinput(
-            text="❌ 买入优先费必须大于等于 0，请重新输入：",
+            text="❌ Compute unit price must be greater than or equal to 0, please re-enter:",
             last_message=message,
             state=state,
         )
@@ -342,12 +344,12 @@ async def handle_buy_priority_fee(message: Message, state: FSMContext):
     if setting is None:
         raise ValueError("Setting not found")
 
-    if setting.buy_priority_fee == buy_priority_fee:
+    if setting.compute_unit_price_micro_lamports == compute_unit_price:
         await cleanup_conversation_messages(message, state)
         return
 
     # Update settings
-    setting.buy_priority_fee = buy_priority_fee
+    setting.compute_unit_price_micro_lamports = compute_unit_price
     await state.update_data(setting=setting)
     await setting_service.set(setting)
 
@@ -366,99 +368,6 @@ async def handle_buy_priority_fee(message: Message, state: FSMContext):
     )
 
     # 重置 state 状态
-    await state.set_state(None)
-
-
-@router.callback_query(F.data == "setting:edit_sell_priority_fee")
-async def edit_sell_priority_fee(callback: CallbackQuery, state: FSMContext):
-    if callback.message is None:
-        logger.warning("No message found in update")
-        return
-
-    if not isinstance(callback.message, Message):
-        logger.warning("Message is not a Message object")
-        return
-
-    setting = cast(Setting, (await state.get_data()).get("setting"))
-    if setting is None:
-        setting = await get_setting_from_db(callback.from_user.id)
-        await state.update_data(setting=setting)
-    if setting is None:
-        raise ValueError("Setting not found")
-
-    await state.update_data(
-        original_message_id=callback.message.message_id,
-        original_chat_id=callback.message.chat.id,
-    )
-
-    # Send prompt message with force reply
-    msg = await callback.message.answer(
-        f"👋 请输入卖出优先费(当前 {setting.sell_priority_fee}):",
-        parse_mode="HTML",
-        reply_markup=ForceReply(),
-    )
-
-    # Store prompt message details for cleanup
-    await state.update_data(
-        prompt_message_id=msg.message_id,
-        prompt_chat_id=msg.chat.id,
-    )
-    await state.set_state(SettingStates.WAITING_FOR_SELL_PRIORITY_FEE)
-
-
-@router.message(SettingStates.WAITING_FOR_SELL_PRIORITY_FEE)
-async def handle_sell_priority_fee(message: Message, state: FSMContext):
-    if not message.text:
-        return
-
-    try:
-        sell_priority_fee = float(message.text.strip())
-    except ValueError:
-        return await invalid_input_and_request_reinput(
-            text="❌ 卖出优先费是数字，请重新输入：",
-            last_message=message,
-            state=state,
-        )
-
-    if sell_priority_fee < 0:
-        return await invalid_input_and_request_reinput(
-            text="❌ 卖出优先费必须大于等于 0，请重新输入：",
-            last_message=message,
-            state=state,
-        )
-
-    data = await state.get_data()
-    setting: Setting | None = data.get("setting")
-    if setting is None:
-        if message.from_user is None:
-            raise ValueError("Setting not found")
-        setting = await get_setting_from_db(message.from_user.id)
-        await state.update_data(setting=setting)
-    if setting is None:
-        raise ValueError("Setting not found")
-
-    if setting.sell_priority_fee == sell_priority_fee:
-        await cleanup_conversation_messages(message, state)
-        return
-
-    # Update settings
-    setting.sell_priority_fee = sell_priority_fee
-    await state.update_data(setting=setting)
-    await setting_service.set(setting)
-
-    if message.bot is None:
-        logger.warning("No bot found in message")
-        return
-
-    await cleanup_conversation_messages(message, state)
-
-    render_data = await render(message, setting)
-    await message.bot.edit_message_text(
-        chat_id=data["original_chat_id"],
-        message_id=data["original_message_id"],
-        **render_data,
-    )
-
     await state.set_state(None)
 
 

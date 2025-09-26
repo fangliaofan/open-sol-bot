@@ -121,7 +121,7 @@ class TradingExecutor:
             slippage_bps,
             swap_in_type,
             use_jito=settings.trading.use_jito,
-            priority_fee=swap_event.priority_fee,
+            compute_unit_price_micro_lamports=swap_event.compute_unit_price_micro_lamports,
         )
 
         return sig

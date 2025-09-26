@@ -181,8 +181,7 @@ SETTING_TEMPLATE = env.from_string(
 
 🚀️ 快速滑点: {{ quick_slippage }}
 🛡️ 防夹滑点: {{ sandwich_slippage }}%
-🟢 买入优先费:  {{ buy_priority_fee }} SOL
-🔴 卖出优先费:  {{ sell_priority_fee }} SOL
+⛽ 计算单元价格: {{ compute_unit_price_micro_lamports }} micro lamports
 
 自动滑点: 根据K线自动调整滑点，范围2.5%~30%。
 开启后，仅对快速模式生效，防夹模式不生效。
@@ -193,8 +192,6 @@ SETTING_TEMPLATE = env.from_string(
 def render_setting_message(setting: Setting):
     wallet_address = setting.wallet_address
     sandwich_slippage = setting.get_sandwich_slippage_pct()
-    buy_priority_fee = setting.buy_priority_fee
-    sell_priority_fee = setting.sell_priority_fee
     if setting.auto_slippage:
         quick_slippage = "自动"
     else:
@@ -204,8 +201,7 @@ def render_setting_message(setting: Setting):
         wallet_address=wallet_address,
         quick_slippage=quick_slippage,
         sandwich_slippage=sandwich_slippage,
-        buy_priority_fee=buy_priority_fee,
-        sell_priority_fee=sell_priority_fee,
+        compute_unit_price_micro_lamports=setting.compute_unit_price_micro_lamports,
     )
 
 
@@ -220,7 +216,7 @@ SWAP_TOKEN_TEMPLATE = env.from_string(
 💎 持仓 {{ holding_sol_balance }} SOL
 | 代币 {{ holding_token_balance }}
 
-⚙️ 买 {{ buy_priority_fee }} SOL | 卖 {{ sell_priority_fee }} SOL (点击 /set 修改)
+⚙️ 计算单元价格: {{ compute_unit_price_micro_lamports }} (点击 /set 修改)
 """
 )
 
@@ -230,8 +226,7 @@ def render_swap_token_message(token_info: TokenInfo, setting: Setting):
         symbol=token_info.symbol,
         name=token_info.token_name,
         mint=token_info.mint,
-        buy_priority_fee=setting.buy_priority_fee,
-        sell_priority_fee=setting.sell_priority_fee,
+        compute_unit_price_micro_lamports=setting.compute_unit_price_micro_lamports,
     )
 
 

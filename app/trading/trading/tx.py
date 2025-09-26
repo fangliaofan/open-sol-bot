@@ -36,7 +36,7 @@ async def build_transaction(
     keypair: Keypair,
     instructions: list,
     use_jito: bool | None = None,
-    priority_fee: float | None = None,
+    compute_unit_price_micro_lamports: int | None = None,
 ) -> VersionedTransaction:
     """Build transaction with instructions.
 
@@ -44,39 +44,19 @@ async def build_transaction(
         keypair (Keypair): Keypair of the transaction signer
         instructions (list): List of instructions to include in the transaction
         use_jito (bool): Whether to use Jito or not
-        priority_fee (float): Priority fee
+        compute_unit_price_micro_lamports (int): The compute unit price in micro lamports
 
     Returns:
         VersionedTransaction: The built transaction
     """
-    if use_jito and priority_fee is not None:
-        unit_price, unit_limit, jito_fee = calc_tx_units_and_split_fees(priority_fee)
-        # 96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5
-        instructions.append(
-            transfer(
-                TransferParams(
-                    from_pubkey=keypair.pubkey(),
-                    to_pubkey=Pubkey.from_string("96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5"),
-                    lamports=int(jito_fee * SOL_DECIMAL),
-                )
-            )
-        )
-    elif priority_fee is not None:
-        unit_price, unit_limit = calc_tx_units(priority_fee)
-        logger.info(
-            f"Using custom priority fee, unit limit: {unit_limit}, unit price: {unit_price}"
-        )
-        instructions.insert(0, set_compute_unit_limit(unit_limit))
-        instructions.insert(1, set_compute_unit_price(unit_price))
+    if compute_unit_price_micro_lamports is not None:
+        unit_price = compute_unit_price_micro_lamports
+        logger.info(f"Using custom compute unit price: {unit_price}")
     else:
-        logger.info(
-            f"Using default priority fee, unit limit: {settings.trading.unit_limit}, unit price: {settings.trading.unit_price}"
-        )
-        unit_price, unit_limit = (
-            settings.trading.unit_price,
-            settings.trading.unit_limit,
-        )
+        unit_price = settings.trading.unit_price
+        logger.info(f"Using default compute unit price: {unit_price}")
 
+    unit_limit = settings.trading.unit_limit
     instructions.insert(0, set_compute_unit_limit(unit_limit))
     instructions.insert(1, set_compute_unit_price(unit_price))
 

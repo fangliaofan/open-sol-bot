@@ -17,7 +17,7 @@ class SwapEvent(BaseModel):
     timestamp: int  # unix timestamp
     amount_pct: float | None = None  # 百分比 0-1
     swap_in_type: Literal["qty", "pct"] = "qty"
-    priority_fee: float | None = None  # SOL
+    compute_unit_price_micro_lamports: int | None = None
     slippage_bps: int | None = None  # basis points, 100 = 1%
     by: Literal["user", "copytrade"] = "user"  # 由用户发起或自动跟单发起
     # --- jupiter ---

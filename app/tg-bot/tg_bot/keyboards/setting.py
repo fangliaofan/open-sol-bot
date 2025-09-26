@@ -30,12 +30,8 @@ def settings_keyboard(setting: Setting) -> InlineKeyboardMarkup:
             ],
             [
                 InlineKeyboardButton(
-                    text="修改买入优先费",
-                    callback_data="setting:edit_buy_priority_fee",
-                ),
-                InlineKeyboardButton(
-                    text="修改卖出优先费",
-                    callback_data="setting:edit_sell_priority_fee",
+                    text="修改计算单元价格",
+                    callback_data="setting:edit_compute_unit_price",
                 ),
             ],
             [

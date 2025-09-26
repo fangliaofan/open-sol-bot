@@ -41,8 +41,7 @@ class SettingStates(StatesGroup):
     EDIT_QUICK_SLIPPAGE = State()
     WAITING_FOR_QUICK_SLIPPAGE = State()  # 等待输入快速滑点
     WAITING_FOR_SANDWICH_SLIPPAGE = State()  # 等待输入防夹滑点
-    WAITING_FOR_BUY_PRIORITY_FEE = State()  # 等待输入买入优先费
-    WAITING_FOR_SELL_PRIORITY_FEE = State()  # 等待输入卖出优先费
+    WAITING_FOR_COMPUTE_UNIT_PRICE = State()
     WAITING_FOR_CUSTOM_BUY_AMOUNT = State()  # 等待输入自定义买入数量
     WAITING_FOR_CUSTOM_SELL_PCT = State()  # 等待输入自定义卖出
 

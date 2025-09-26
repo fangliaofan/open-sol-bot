@@ -29,7 +29,7 @@ class GMGNTransactionBuilder(TransactionBuilder):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> VersionedTransaction:
         """Build swap transaction with GMGN API.
 
@@ -65,11 +65,12 @@ class GMGNTransactionBuilder(TransactionBuilder):
         else:
             raise ValueError("swap_direction must be buy or sell")
 
-        if priority_fee is None:
-            fee = settings.trading.unit_limit * settings.trading.unit_price / 10**15
+        if compute_unit_price_micro_lamports is None:
+            unit_price = settings.trading.unit_price
         else:
-            fee = priority_fee
+            unit_price = compute_unit_price_micro_lamports
 
+        fee = settings.trading.unit_limit * unit_price / 10**15
         slippage = slippage_bps / 100
         swap_tx = await self.gmgn_client.get_swap_transaction(
             token_in_address=token_in,

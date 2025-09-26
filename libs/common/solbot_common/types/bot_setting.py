@@ -14,8 +14,7 @@ class BotSetting:
     max_slippage: int = 3000  # 30%
     sandwich_mode: bool = False
     sandwich_slippage_bps: int = 5000  # 50%
-    buy_priority_fee: float = 0.0001  # SOL
-    sell_priority_fee: float = 0.0001  # SOL
+    compute_unit_price_micro_lamports: int = 50000
     auto_buy: bool = False
     auto_sell: bool = False
     custom_buy_amount_1: float = 0.05  # SOL

@@ -38,7 +38,7 @@ class Swapper:
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> Signature | None:
         """执行代币交换操作
 
@@ -63,7 +63,7 @@ class Swapper:
             slippage_bps=slippage_bps,
             in_type=in_type,
             use_jito=use_jito,
-            priority_fee=priority_fee,
+            compute_unit_price_micro_lamports=compute_unit_price_micro_lamports,
         )
         logger.debug(f"Built swap transaction: {transaction}")
         signature = await self.sender.send_transaction(transaction)
@@ -94,7 +94,7 @@ class AggregateTransactionBuilder(TransactionBuilder):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> tuple[TransactionBuilder, VersionedTransaction]:
         """尝试使用指定构建器构建交易
 
@@ -110,7 +110,7 @@ class AggregateTransactionBuilder(TransactionBuilder):
                 slippage_bps=slippage_bps,
                 in_type=in_type,
                 use_jito=use_jito,
-                priority_fee=priority_fee,
+                compute_unit_price_micro_lamports=compute_unit_price_micro_lamports,
             )
             return builder, tx
         except Exception as e:
@@ -126,7 +126,7 @@ class AggregateTransactionBuilder(TransactionBuilder):
         slippage_bps: int,
         in_type: SwapInType | None = None,
         use_jito: bool = False,
-        priority_fee: float | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> VersionedTransaction:
         """并行尝试所有构建器,返回最快成功的交易
 
@@ -150,7 +150,7 @@ class AggregateTransactionBuilder(TransactionBuilder):
                 slippage_bps,
                 in_type,
                 use_jito,
-                priority_fee,
+                compute_unit_price_micro_lamports,
             )
             for builder in self.builders
         ]

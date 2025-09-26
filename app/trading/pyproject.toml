@@ -41,6 +41,9 @@ dependencies = [
     # Jupiter DEX SDK
     "jupiter-python-sdk>=0.0.2.0",
 
+    # solbot
+    "solbot-cache",
+
     # 监控
     "sentry-sdk>=2.21.0",
 ]

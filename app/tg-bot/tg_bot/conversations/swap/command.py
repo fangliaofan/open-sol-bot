@@ -145,7 +145,7 @@ async def swap_command(message: Message):
         ui_amount=from_amount,
         slippage_bps=slippage_bps,
         timestamp=int(time.time()),
-        priority_fee=(setting.buy_priority_fee if cmd == "buy" else setting.sell_priority_fee),
+        compute_unit_price_micro_lamports=setting.compute_unit_price_micro_lamports,
     )
     if setting.auto_slippage:
         swap_event.dynamic_slippage = True

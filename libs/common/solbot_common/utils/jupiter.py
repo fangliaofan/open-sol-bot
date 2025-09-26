@@ -47,6 +47,7 @@ class JupiterAPI:
         max_priority_fee_lamports: int = 10**8,
         use_jito: bool = False,
         jito_tip_lamports: int | None = None,
+        compute_unit_price_micro_lamports: int | None = None,
     ) -> dict:
         """Get swap transaction from Jupiter API.
 
@@ -106,6 +107,8 @@ class JupiterAPI:
             "dynamicSlippage": True,
             "prioritizationFeeLamports": prioritizationFeeLamports,
         }
+        if compute_unit_price_micro_lamports:
+            data["computeUnitPriceMicroLamports"] = compute_unit_price_micro_lamports
         resp = await self.client.post("/swap/v1/swap", json=data)
         resp.raise_for_status()
         return resp.json()

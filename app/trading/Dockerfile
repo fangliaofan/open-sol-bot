@@ -29,7 +29,11 @@ RUN mkdir -p /app/libs /app/logs
 FROM builder as final
 
 # Install dependencies
-COPY ./libs /app/libs
+COPY ./libs/cache /app/libs/cache
+COPY ./libs/db /app/libs/db
+COPY ./libs/services /app/libs/services
+COPY ./libs/common /app/libs/common
+COPY ./libs/yellowstone_grpc /app/libs/yellowstone_grpc
 COPY ./app/trading/pyproject.toml /app/
 RUN pdm config python.use_venv false && \
     pdm install -G local
